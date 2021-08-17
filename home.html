@@ -2,20 +2,28 @@
 <html>
 <head>
 <title>Emission/Absorption Simulation</title>
+<link rel="stylesheet" type="text/css" href="style.css"/ >
 </head>
 
 <body>
   <h1>Emission/Absorption Simulation</h1>
   <p>This is a test</p>
 
-  <label for="starslider">Star Brightness</label>
-    <input type="range" id="starslider" min="0" max="100" class="slider" value="100">
-  <label for="gasslider">Gas Amount</label>
-    <input type="range" id="gasslider" min="0" max="100" class="slider" value="0">
-  <br>
+  <canvas id="star" width="500" height="320"></canvas>
   <canvas id="spectrum" width="60" height="320"></canvas>
+  <canvas id="filteredSpectrum" width="60" height="320"></canvas>
+  <img src="trifidNone.png" height="320" name="myImage" />
+<br>
+  <div class="sliders">
+  <input type="range" id="starslider" min="0" max="100" class="slider" value="100">
+  <p><label for="starslider">Star Brightness</label></p>
+  </div>
+  <div class="sliders">
+  <input type="range" id="gasslider" min="0" max="100" class="slider" value="0">
+  <p><label for="gasslider">Gas Amount</label></p>
+  </div>
   <label for="filter">Filter</label>
-    <select id="filter" onchange="changeFilter()">
+    <select id="filter" onchange="filtered()">
       <option value="None" selected>None</option>
       <option value="B">B</option>
       <option value="V">V</option>
@@ -25,10 +33,6 @@
       <option value="O3">Oxygen III</option>
     </select>
     <span id="myText"></span>
-  <canvas id="filteredSpectrum" width="60" height="320"></canvas>
-  <br>
-  <img src="trifidNone.png" width="300" height="300" name="myImage" />
-
   
 <script>
     const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 14], S2: [672, 14], O3: [500, 14]}
@@ -37,9 +41,42 @@
     
     var spectrum = document.getElementById("spectrum");
     var filteredSpectrum = document.getElementById("filteredSpectrum");
+    var star = document.getElementById("star");
+    var gas = document.getElementById("gas");
+
+  //star and gas
+  function starGas() {
+    //star
+    var context = star.getContext('2d');
+    context.clearRect(0,0,star.width,star.height);
+    context.globalAlpha = document.getElementById('starslider').value/100;
+    context.beginPath();
+    context.arc(100, star.height/2, 40, 0, 2 * Math.PI, false);
+    context.fillStyle = 'yellow';
+    context.fill();
+
+
+    var xoff = 80;
+    var yoff = -30;
+    context.globalAlpha = document.getElementById('gasslider').value/100;
+    context.beginPath();
+    context.moveTo(196 + xoff, 232 + yoff);
+    context.bezierCurveTo(181 + xoff, 232 + yoff, 278 + xoff, 248 + yoff, 317 + xoff, 230 + yoff);
+    context.bezierCurveTo(329 + xoff, 230 + yoff, 344 + xoff, 212 + yoff, 327 + xoff, 204 + yoff);
+    context.bezierCurveTo(339 + xoff, 195 + yoff, 316 + xoff, 159 + yoff, 299 + xoff, 177 + yoff);
+    context.bezierCurveTo(296 + xoff, 139 + yoff, 256 + xoff, 141 + yoff, 240 + xoff, 163 + yoff);
+    context.bezierCurveTo(217 + xoff, 147 + yoff, 194 + xoff, 169 + yoff, 195 + xoff, 197 + yoff);
+    context.bezierCurveTo(172 + xoff, 193 + yoff, 171 + xoff, 229 + yoff, 193 + xoff, 231 + yoff);
+    context.closePath();
+    context.lineWidth = 5;
+    context.fillStyle = '#8ED6FF';
+    context.fill();
+   
+
+  }
 
   //unfiltered result
-function unfiltered() {
+  function unfiltered() {
     if (spectrum.getContext)   
     {  
     var ctx = spectrum.getContext("2d");         
@@ -81,6 +118,7 @@ function unfiltered() {
     })
     }
     filtered()
+    starGas()
   }
 
   //filtered result
@@ -119,14 +157,14 @@ function unfiltered() {
         ctx.fillRect(0, 0, 75, 320);
       }
 
+      document.myImage.src ="trifid"+document.getElementById("filter").value+".png";
+      document.myImage.style.filter = "brightness("+document.getElementById('gasslider').value+"%)";
+
 
     }
     
   }
 
-  function changeFilter() {
-    document.myImage.src ="trifidHa.png";
-  }
   setInterval(unfiltered, 100)
 </script>
 </body>
