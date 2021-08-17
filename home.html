@@ -9,15 +9,13 @@
   <p>This is a test</p>
 
   <label for="starslider">Star Brightness</label>
-    <input type="range" id="starslider" min="0" max="100" class="slider" value="50">
-  <div id="starSliderDiv"></div>
+    <input type="range" id="starslider" min="0" max="100" class="slider" value="100">
   <label for="gasslider">Gas Amount</label>
-    <input type="range" id="gasslider" min="0" max="100" class="slider" value="50">
-  <div id="gasSliderDiv"></div>
+    <input type="range" id="gasslider" min="0" max="100" class="slider" value="0">
   <br>
   <canvas id="spectrum" width="60" height="320"></canvas>
   <label for="filter">Filter</label>
-    <select id="filter" onchange="chooseFilter()">
+    <select id="filter" onchange="changeFilter()">
       <option value="None" selected>None</option>
       <option value="B">B</option>
       <option value="V">V</option>
@@ -29,6 +27,7 @@
     <span id="myText"></span>
   <canvas id="filteredSpectrum" width="60" height="320"></canvas>
   <br>
+  <img src="trifidNone.png" width="300" height="300" name="myImage" />
 
   
 <script>
@@ -39,29 +38,13 @@
     var spectrum = document.getElementById("spectrum");
     var filteredSpectrum = document.getElementById("filteredSpectrum");
 
-    //spectrum after filter - useless right now
-    if (filteredSpectrum.getContext)   
-    {  
-    var ctx = filteredSpectrum.getContext("2d");         
-    var gradient = ctx.createLinearGradient(10, 0, 0, 320);
-    gradient.addColorStop(0, 'red');
-    gradient.addColorStop(1 / 6, 'orange');
-    gradient.addColorStop(2 / 6, 'yellow');
-    gradient.addColorStop(3 / 6, 'green');
-    gradient.addColorStop(4 / 6, 'blue');
-    gradient.addColorStop(5 / 6, 'indigo');
-    gradient.addColorStop(1, 'violet');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 75, 320);
-    }
-
-  //Slider for brightness of star
-  document.getElementById('starslider').oninput = function() {
+  //unfiltered result
+function unfiltered() {
     if (spectrum.getContext)   
     {  
     var ctx = spectrum.getContext("2d");         
     var gradient = ctx.createLinearGradient(10, 0, 0, 320);
-    ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+    ctx.clearRect(0,0,spectrum.width,spectrum.height);
     gradient.addColorStop(0, 'red');
     gradient.addColorStop(1 / 6, 'orange');
     gradient.addColorStop(2 / 6, 'yellow');
@@ -69,38 +52,39 @@
     gradient.addColorStop(4 / 6, 'blue');
     gradient.addColorStop(5 / 6, 'indigo');
     gradient.addColorStop(1, 'violet');
+
+    //dealing with star brightness slider
     ctx.fillStyle = gradient;
     ctx.globalAlpha = document.getElementById('starslider').value/100;
     ctx.fillRect(0, 0, 75, 320);
-    }
     
-    
-    starSliderDiv.innerHTML = this.value;
-  }
-
-  // gas slider
-  document.getElementById('gasslider').oninput = function() {
-    if (spectrum.getContext)   
-    {  
-     gases.forEach(function (item, index) {
-        var ctx = spectrum.getContext("2d");
+    //dealing with gas slider
+    gases.forEach(function (item, index) {
+        if (document.getElementById('gasslider').value <= document.getElementById('starslider').value) {
+        ctx.globalAlpha = document.getElementById('gasslider').value/100;
         ctx.beginPath();
         ctx.lineWidth = "7";
         ctx.strokeStyle = "black";
-        ctx.moveTo(0, item);
-        ctx.lineTo(75, item);
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
         ctx.stroke();
-        console.log(item)
-
+        } else{
+        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        ctx.beginPath();
+        ctx.lineWidth = "7";
+        ctx.strokeStyle = gradient;
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
+        ctx.stroke();
+        }
         
     })
     }
-    chooseFilter()
-    gasSliderDiv.innerHTML = this.value;
+    filtered()
   }
 
   //filtered result
-  function chooseFilter() {
+  function filtered() {
     if (filteredSpectrum.getContext)   
     {  
         var ctx = filteredSpectrum.getContext("2d");
@@ -119,7 +103,11 @@
         ctx.beginPath();
         ctx.lineWidth = array[1];
         ctx.strokeStyle = gradient;
-        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        if(document.getElementById("filter").value=="Ha"|"S2"|"O3") {
+          ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        } else {
+          ctx.globalAlpha = document.getElementById('starslider').value/100;    
+        }
         ctx.moveTo(0, 700-array[0]);
         ctx.lineTo(75, 700-array[0]);
         ctx.stroke();
@@ -127,15 +115,19 @@
         ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
         ctx.fillStyle = gradient;
         // this needs to be fixed :/
-        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        ctx.globalAlpha = document.getElementById('starslider').value/100;
         ctx.fillRect(0, 0, 75, 320);
       }
 
 
     }
-    console.log(document.getElementById("filter").value)
     
   }
+
+  function changeFilter() {
+    document.myImage.src ="trifidHa.png";
+  }
+  setInterval(unfiltered, 100)
 </script>
 </body>
 </html>
