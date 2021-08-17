@@ -7,13 +7,22 @@
 
 <body>
   <h1>Emission/Absorption Simulation</h1>
-  <p>This is a test</p>
 
   <canvas id="star" width="500" height="320"></canvas>
   <canvas id="spectrum" width="60" height="320"></canvas>
+  <canvas id="filterim" width="60" height="320"></canvas>
   <canvas id="filteredSpectrum" width="60" height="320"></canvas>
   <img src="trifidNone.png" height="320" name="myImage" />
 <br>
+<form name="radioForm">
+  <div class="sliders">
+    <input type="radio" id="starandgas" name="stargasonoff" value="starandgas" onclick="starGasOnOff()">
+    <label for="starandgas">Star and Gas</label>
+    <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" onclick="starGasOnOff()">
+    <label for="onlystar">Star</label>
+    <input type="radio" id="onlygas" name="stargasonoff" value="onlygas" onclick="starGasOnOff()">
+    <label for="onlygas">Gas</label>
+  </div>
   <div class="sliders">
   <input type="range" id="starslider" min="0" max="100" class="slider" value="100">
   <p><label for="starslider">Star Brightness</label></p>
@@ -32,6 +41,7 @@
       <option value="S2">Sulfur II</option>
       <option value="O3">Oxygen III</option>
     </select>
+  </form>
     <span id="myText"></span>
   
 <script>
@@ -42,9 +52,9 @@
     var spectrum = document.getElementById("spectrum");
     var filteredSpectrum = document.getElementById("filteredSpectrum");
     var star = document.getElementById("star");
-    var gas = document.getElementById("gas");
+    var filter = document.getElementById("filterim");
 
-  //star and gas
+  //star, gas, filter
   function starGas() {
     //star
     var context = star.getContext('2d');
@@ -55,7 +65,7 @@
     context.fillStyle = 'yellow';
     context.fill();
 
-
+    //gas
     var xoff = 80;
     var yoff = -30;
     context.globalAlpha = document.getElementById('gasslider').value/100;
@@ -71,8 +81,14 @@
     context.lineWidth = 5;
     context.fillStyle = '#8ED6FF';
     context.fill();
-   
-
+    
+    //filter
+    if (document.getElementById("filter").value!=="None"){
+    var ctx = filterim.getContext('2d');
+    ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+    ctx.fillStyle = 'gray';
+    ctx.fillRect(10, 10, 40, 300);
+    }
   }
 
   //unfiltered result
@@ -158,13 +174,15 @@
       }
 
       document.myImage.src ="trifid"+document.getElementById("filter").value+".png";
-      document.myImage.style.filter = "brightness("+document.getElementById('gasslider').value+"%)";
+      // document.myImage.style.filter = "brightness("+document.getElementById('gasslider').value+"%)";
 
 
     }
     
   }
-
+  function starGasOnOff() {
+    var state = document.forms.radioForm.elements.stargasonoff.value
+  }
   setInterval(unfiltered, 100)
 </script>
 </body>
