@@ -19,11 +19,9 @@
   <label for="filter">Filter</label>
     <select id="filter" onchange="chooseFilter()">
       <option value="None" selected>None</option>
-      <option value="U">U</option>
       <option value="B">B</option>
       <option value="V">V</option>
       <option value="R">R</option>
-      <option value="I">I</option>
       <option value="Ha">H Alpha</option>
       <option value="S2">Sulfur II</option>
       <option value="O3">Oxygen III</option>
@@ -34,14 +32,14 @@
 
   
 <script>
-    const filters = {Ha: [656.3], S2: [672], O3: [500]}
+    const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 14], S2: [672, 14], O3: [500, 14]}
     const gases = [656, 486, 434, 410, 672, 496, 501]
     // {Hydrogen: [656.3, 486.1, 434, 410.2], Sulfur: [672], Oxygen: [496, 501]}
     
     var spectrum = document.getElementById("spectrum");
     var filteredSpectrum = document.getElementById("filteredSpectrum");
 
-    //spectrum after filter
+    //spectrum after filter - useless right now
     if (filteredSpectrum.getContext)   
     {  
     var ctx = filteredSpectrum.getContext("2d");         
@@ -63,6 +61,7 @@
     {  
     var ctx = spectrum.getContext("2d");         
     var gradient = ctx.createLinearGradient(10, 0, 0, 320);
+    ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
     gradient.addColorStop(0, 'red');
     gradient.addColorStop(1 / 6, 'orange');
     gradient.addColorStop(2 / 6, 'yellow');
@@ -79,6 +78,7 @@
     starSliderDiv.innerHTML = this.value;
   }
 
+  // gas slider
   document.getElementById('gasslider').oninput = function() {
     if (spectrum.getContext)   
     {  
@@ -94,30 +94,42 @@
 
         
     })
-
-
-
     }
-    
-    
+    chooseFilter()
     gasSliderDiv.innerHTML = this.value;
   }
 
+  //filtered result
   function chooseFilter() {
     if (filteredSpectrum.getContext)   
     {  
-    let array = filters[document.getElementById("filter").value]
-   array.forEach(function (item, index) {
         var ctx = filteredSpectrum.getContext("2d");
-        ctx.beginPath();
-        ctx.lineWidth = "14";
-        ctx.strokeStyle = "black";
-        ctx.moveTo(0, 700-item);
-        ctx.lineTo(75, 700-item);
-        ctx.stroke();
-
+        var gradient = ctx.createLinearGradient(10, 0, 0, 320);
+        gradient.addColorStop(0, 'red');
+        gradient.addColorStop(1 / 6, 'orange');
+        gradient.addColorStop(2 / 6, 'yellow');
+        gradient.addColorStop(3 / 6, 'green');
+        gradient.addColorStop(4 / 6, 'blue');
+        gradient.addColorStop(5 / 6, 'indigo');
+        gradient.addColorStop(1, 'violet');
         
-    })
+      if (document.getElementById("filter").value!=="None") {
+        let array = filters[document.getElementById("filter").value]
+        ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+        ctx.beginPath();
+        ctx.lineWidth = array[1];
+        ctx.strokeStyle = gradient;
+        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        ctx.moveTo(0, 700-array[0]);
+        ctx.lineTo(75, 700-array[0]);
+        ctx.stroke();
+      } else {
+        ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+        ctx.fillStyle = gradient;
+        // this needs to be fixed :/
+        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        ctx.fillRect(0, 0, 75, 320);
+      }
 
 
     }
