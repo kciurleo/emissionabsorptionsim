@@ -12,23 +12,22 @@
   <canvas id="spectrum" width="60" height="320"></canvas>
   <canvas id="filterim" width="60" height="320"></canvas>
   <canvas id="filteredSpectrum" width="60" height="320"></canvas>
-  <img src="trifidNone.png" height="320" name="myImage" />
 <br>
 <form name="radioForm">
   <div class="sliders">
-    <input type="radio" id="starandgas" name="stargasonoff" value="starandgas" onclick="starGasOnOff()">
-    <label for="starandgas">Star and Gas</label>
-    <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" onclick="starGasOnOff()">
+    <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" checked>
     <label for="onlystar">Star</label>
-    <input type="radio" id="onlygas" name="stargasonoff" value="onlygas" onclick="starGasOnOff()">
+    <input type="radio" id="onlygas" name="stargasonoff" value="onlygas">
     <label for="onlygas">Gas</label>
+    <input type="radio" id="starandgas" name="stargasonoff" value="starandgas">
+    <label for="starandgas">Star and Gas</label>
   </div>
   <div class="sliders">
-  <input type="range" id="starslider" min="0" max="100" class="slider" value="100">
+  <input type="range" id="starslider" min="0.1" max="1" step="0.01" class="slider" value="1">
   <p><label for="starslider">Star Brightness</label></p>
   </div>
   <div class="sliders">
-  <input type="range" id="gasslider" min="0" max="100" class="slider" value="0">
+  <input type="range" id="gasslider" min="0.1" max="1" step="0.01" class="slider" value="0">
   <p><label for="gasslider">Gas Amount</label></p>
   </div>
   <label for="filter">Filter</label>
@@ -42,7 +41,8 @@
       <option value="O3">Oxygen III</option>
     </select>
   </form>
-    <span id="myText"></span>
+  <br>
+  <img src="trifidNone.png" height="320" name="myImage" />
   
 <script>
     const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 14], S2: [672, 14], O3: [500, 14]}
@@ -54,12 +54,19 @@
     var star = document.getElementById("star");
     var filter = document.getElementById("filterim");
 
-  //star, gas, filter
+  //star, gas, filter images
   function starGas() {
     //star
+    var state = document.forms.radioForm.elements.stargasonoff.value
     var context = star.getContext('2d');
     context.clearRect(0,0,star.width,star.height);
-    context.globalAlpha = document.getElementById('starslider').value/100;
+    if (state=="onlygas") {
+      context.globalAlpha = 0;
+      document.getElementById('starslider').disabled=true;
+    } else {
+      document.getElementById('starslider').disabled=false;
+      context.globalAlpha = document.getElementById('starslider').value;
+    }
     context.beginPath();
     context.arc(100, star.height/2, 40, 0, 2 * Math.PI, false);
     context.fillStyle = 'yellow';
@@ -68,7 +75,13 @@
     //gas
     var xoff = 80;
     var yoff = -30;
-    context.globalAlpha = document.getElementById('gasslider').value/100;
+    if (state=="onlystar") {
+      context.globalAlpha = 0;
+      document.getElementById('gasslider').disabled=true;
+    } else {
+      document.getElementById('gasslider').disabled=false;
+      context.globalAlpha = document.getElementById('gasslider').value;
+    }
     context.beginPath();
     context.moveTo(196 + xoff, 232 + yoff);
     context.bezierCurveTo(181 + xoff, 232 + yoff, 278 + xoff, 248 + yoff, 317 + xoff, 230 + yoff);
@@ -88,11 +101,16 @@
     ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
     ctx.fillStyle = 'gray';
     ctx.fillRect(10, 10, 40, 300);
+    } else {
+    var ctx = filterim.getContext('2d');
+    ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
     }
   }
 
   //unfiltered result
   function unfiltered() {
+    var state = document.forms.radioForm.elements.stargasonoff.value
+
     if (spectrum.getContext)   
     {  
     var ctx = spectrum.getContext("2d");         
@@ -107,24 +125,25 @@
     gradient.addColorStop(1, 'violet');
 
     //dealing with star brightness slider
-    ctx.fillStyle = gradient;
-    ctx.globalAlpha = document.getElementById('starslider').value/100;
-    ctx.fillRect(0, 0, 75, 320);
-    
+    if (state !== "onlygas") {
+      ctx.fillStyle = gradient;
+      ctx.globalAlpha = document.getElementById('starslider').value;
+      ctx.fillRect(0, 0, 75, 320);
+    }
     //dealing with gas slider
     gases.forEach(function (item, index) {
-        if (document.getElementById('gasslider').value <= document.getElementById('starslider').value) {
-        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        if (state == "starandgas") {
+        ctx.globalAlpha = document.getElementById('gasslider').value;
         ctx.beginPath();
-        ctx.lineWidth = "7";
-        ctx.strokeStyle = "black";
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = "white";
         ctx.moveTo(0, 700-item);
         ctx.lineTo(75, 700-item);
         ctx.stroke();
-        } else{
-        ctx.globalAlpha = document.getElementById('gasslider').value/100;
+        } else if (state=="onlygas"){
+        ctx.globalAlpha = document.getElementById('gasslider').value;
         ctx.beginPath();
-        ctx.lineWidth = "7";
+        ctx.lineWidth = "5";
         ctx.strokeStyle = gradient;
         ctx.moveTo(0, 700-item);
         ctx.lineTo(75, 700-item);
@@ -154,23 +173,16 @@
       if (document.getElementById("filter").value!=="None") {
         let array = filters[document.getElementById("filter").value]
         ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+        ctx.globalAlpha = document.getElementById('starslider').value;
         ctx.beginPath();
         ctx.lineWidth = array[1];
         ctx.strokeStyle = gradient;
-        if(document.getElementById("filter").value=="Ha"|"S2"|"O3") {
-          ctx.globalAlpha = document.getElementById('gasslider').value/100;
-        } else {
-          ctx.globalAlpha = document.getElementById('starslider').value/100;    
-        }
         ctx.moveTo(0, 700-array[0]);
         ctx.lineTo(75, 700-array[0]);
         ctx.stroke();
       } else {
         ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
-        ctx.fillStyle = gradient;
-        // this needs to be fixed :/
-        ctx.globalAlpha = document.getElementById('starslider').value/100;
-        ctx.fillRect(0, 0, 75, 320);
+        ctx.drawImage(spectrum, 0, 0)
       }
 
       document.myImage.src ="trifid"+document.getElementById("filter").value+".png";
@@ -180,9 +192,7 @@
     }
     
   }
-  function starGasOnOff() {
-    var state = document.forms.radioForm.elements.stargasonoff.value
-  }
+
   setInterval(unfiltered, 100)
 </script>
 </body>
