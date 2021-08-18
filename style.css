@@ -5,4 +5,30 @@ h1 {
 
 .sliders {
     display:inline-block;
+    line-height:20px;
+    height:20px;
+}
+
+.images {
+    margin:1%;   
+}
+
+.centered {
+    text-align: center;
+}
+
+@media(max-width:900px){
+    .images {
+        height:200px;
+    }
+}
+
+@media(max-width:600px){
+    .images {
+        height:100px;
+    }
+
+    h1 {
+        font-size:28px;
+    }
 }

@@ -6,16 +6,19 @@
 </head>
 
 <body>
+  <div class="container">
   <h1>Emission/Absorption Simulation</h1>
 
-  <canvas id="star" width="500" height="320"></canvas>
-  <canvas id="spectrum" width="60" height="320"></canvas>
-  <canvas id="filterim" width="60" height="320"></canvas>
-  <canvas id="filteredSpectrum" width="60" height="320"></canvas>
-  <img src="eye.png" height="320" name="eye" />
-<br>
-<form name="radioForm">
-  <div class="sliders">
+  <div class="centered">
+  <canvas id="star" width="400" height="320" class="images"></canvas>
+  <canvas id="spectrum" width="60" height="320" class="images"></canvas>
+  <canvas id="filterim" width="60" height="320" class="images"></canvas>
+  <canvas id="filteredSpectrum" width="60" height="320" class="images"></canvas>
+  <img src="eye.png" height="320" name="eye" class="images"/>
+  </div>
+  <br>
+  <form name="radioForm">
+  <div class="centered">
     <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" checked>
     <label for="onlystar">Star</label>
     <input type="radio" id="onlygas" name="stargasonoff" value="onlygas">
@@ -23,14 +26,20 @@
     <input type="radio" id="starandgas" name="stargasonoff" value="starandgas">
     <label for="starandgas">Star and Gas</label>
   </div>
+  <br>
+  <div class="centered">
   <div class="sliders">
+  <label for="starslider">Star Brightness</label>
   <input type="range" id="starslider" min="0.1" max="1" step="0.01" class="slider" value="1">
-  <p><label for="starslider">Star Brightness</label></p>
   </div>
+  <br>
   <div class="sliders">
+  <label for="gasslider">Gas Amount</label>
   <input type="range" id="gasslider" min="0.1" max="1" step="0.01" class="slider" value="0">
-  <p><label for="gasslider">Gas Amount</label></p>
   </div>
+  </div>
+  <br>
+  <div class="centered">
   <label for="filter">Filter</label>
     <select id="filter" onchange="filtered()">
       <option value="None" selected>None</option>
@@ -42,9 +51,12 @@
       <option value="O3">Oxygen III</option>
     </select>
   </form>
+  </div>
   <br>
+  <div class="centered">
   <img src="trifidNone.png" height="320" name="myImage" />
-  
+  </div>
+  </div>
 <script>
     const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 14], S2: [672, 14], O3: [500, 14]}
     const gases = [656, 486, 434, 410, 672, 496, 501]
@@ -69,12 +81,12 @@
       context.globalAlpha = document.getElementById('starslider').value;
     }
     context.beginPath();
-    context.arc(100, star.height/2, 40, 0, 2 * Math.PI, false);
+    context.arc(60, star.height/2, 40, 0, 2 * Math.PI, false);
     context.fillStyle = 'yellow';
     context.fill();
 
     //gas
-    var xoff = 80;
+    var xoff = 10;
     var yoff = -30;
     if (state=="onlystar") {
       context.globalAlpha = 0;
@@ -167,7 +179,6 @@
         
       if (document.getElementById("filter").value!=="None") {
         let array = filters[document.getElementById("filter").value]
-        ctx.globalAlpha = document.getElementById('starslider').value;
         if (document.getElementById("filter").value!=="R"){
           ctx.clearRect(0, 0, 75, 700-array[0]-array[1]/2);
         }
