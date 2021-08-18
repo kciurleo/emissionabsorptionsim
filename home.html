@@ -161,28 +161,20 @@
     if (filteredSpectrum.getContext)   
     {  
         var ctx = filteredSpectrum.getContext("2d");
-        var gradient = ctx.createLinearGradient(10, 0, 0, 320);
-        gradient.addColorStop(0, 'red');
-        gradient.addColorStop(1 / 6, 'orange');
-        gradient.addColorStop(2 / 6, 'yellow');
-        gradient.addColorStop(3 / 6, 'green');
-        gradient.addColorStop(4 / 6, 'blue');
-        gradient.addColorStop(5 / 6, 'indigo');
-        gradient.addColorStop(1, 'violet');
+        ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+        ctx.drawImage(spectrum, 0, 0)
         
       if (document.getElementById("filter").value!=="None") {
         let array = filters[document.getElementById("filter").value]
-        ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
         ctx.globalAlpha = document.getElementById('starslider').value;
-        ctx.beginPath();
-        ctx.lineWidth = array[1];
-        ctx.strokeStyle = gradient;
-        ctx.moveTo(0, 700-array[0]);
-        ctx.lineTo(75, 700-array[0]);
-        ctx.stroke();
+        if (document.getElementById("filter").value!=="R"){
+          ctx.clearRect(0, 0, 75, 700-array[0]-array[1]/2);
+        }
+        if (document.getElementById("filter").value!=="B"){
+          ctx.clearRect(0, 700-array[0]+array[1]/2, 75, 700);
+        }
       } else {
-        ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
-        ctx.drawImage(spectrum, 0, 0)
+
       }
 
       document.myImage.src ="trifid"+document.getElementById("filter").value+".png";
