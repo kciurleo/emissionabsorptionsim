@@ -129,6 +129,10 @@
     var ctx = spectrum.getContext("2d");         
     var gradient = ctx.createLinearGradient(10, 0, 0, 320);
     ctx.clearRect(0,0,spectrum.width,spectrum.height);
+    ctx.fillStyle = "black";
+    ctx.globalAlpha=1;
+    ctx.fillRect(0, 0, 75, 700);
+    
     gradient.addColorStop(0, 'red');
     gradient.addColorStop(1 / 6, 'orange');
     gradient.addColorStop(2 / 6, 'yellow');
@@ -175,6 +179,9 @@
     {  
         var ctx = filteredSpectrum.getContext("2d");
         ctx.clearRect(0,0,filteredSpectrum.width,filteredSpectrum.height);
+        ctx.fillStyle = "black";
+        ctx.globalAlpha=1;
+        ctx.fillRect(0, 0, 75, 700);
         ctx.drawImage(spectrum, 0, 0)
         
       if (document.getElementById("filter").value!=="None") {
