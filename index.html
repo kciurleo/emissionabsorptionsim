@@ -58,7 +58,7 @@
   </div>
   </div>
 <script>
-    const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 14], S2: [672, 14], O3: [500, 14]}
+    const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 5], S2: [672, 5], O3: [500, 5]}
     const gases = [656, 486, 434, 410, 672, 496, 501]
     // {Hydrogen: [656.3, 486.1, 434, 410.2], Sulfur: [672], Oxygen: [496, 501]}
     
@@ -149,7 +149,7 @@
         ctx.globalAlpha = document.getElementById('gasslider').value;
         ctx.beginPath();
         ctx.lineWidth = "5";
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = "black";
         ctx.moveTo(0, 700-item);
         ctx.lineTo(75, 700-item);
         ctx.stroke();
@@ -180,10 +180,14 @@
       if (document.getElementById("filter").value!=="None") {
         let array = filters[document.getElementById("filter").value]
         if (document.getElementById("filter").value!=="R"){
-          ctx.clearRect(0, 0, 75, 700-array[0]-array[1]/2);
+          ctx.fillStyle = "black";
+          ctx.globalAlpha = 1;
+          ctx.fillRect(0, 0, 75, 700-array[0]-array[1]/2);
         }
         if (document.getElementById("filter").value!=="B"){
-          ctx.clearRect(0, 700-array[0]+array[1]/2, 75, 700);
+          ctx.fillStyle = "black";
+          ctx.globalAlpha = 1;
+          ctx.fillRect(0, 700-array[0]+array[1]/2, 75, 700);
         }
       } else {
 
