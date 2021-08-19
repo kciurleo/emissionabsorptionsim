@@ -22,9 +22,9 @@
     <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" checked>
     <label for="onlystar">Star</label>
     <input type="radio" id="onlygas" name="stargasonoff" value="onlygas">
-    <label for="onlygas">Gas</label>
+    <label for="onlygas">Hot Gas</label>
     <input type="radio" id="starandgas" name="stargasonoff" value="starandgas">
-    <label for="starandgas">Star and Gas</label>
+    <label for="starandgas">Star and Cold Gas</label>
   </div>
   <br>
   <div class="centered">
@@ -105,7 +105,11 @@
     context.bezierCurveTo(172 + xoff, 193 + yoff, 171 + xoff, 229 + yoff, 193 + xoff, 231 + yoff);
     context.closePath();
     context.lineWidth = 5;
-    context.fillStyle = '#8ED6FF';
+    if (state == "onlygas"){
+      context.fillStyle = '#FF8E8E';
+    } else {
+      context.fillStyle = '#8ED6FF';
+    }
     context.fill();
     
     //filter
@@ -132,7 +136,7 @@
     ctx.fillStyle = "black";
     ctx.globalAlpha=1;
     ctx.fillRect(0, 0, 75, 700);
-    
+
     gradient.addColorStop(0, 'red');
     gradient.addColorStop(1 / 6, 'orange');
     gradient.addColorStop(2 / 6, 'yellow');
