@@ -10,12 +10,20 @@
   <h1>Emission/Absorption Simulation</h1>
 
   <div class="centered">
-  <canvas id="star" width="400" height="320" class="images"></canvas>
-  <canvas id="spectrum" width="60" height="320" class="images"></canvas>
-  <canvas id="filterim" width="60" height="320" class="images"></canvas>
-  <canvas id="filteredSpectrum" width="60" height="320" class="images"></canvas>
-  <img src="eye.png" height="320" name="eye" class="images"/>
+  <canvas id="star" width="400" height="320" class="images" role="img" aria-label="Yellow star, red gas cloud directly right"></canvas>
+  <canvas id="spectrum" width="60" height="320" class="images" role="img" aria-label="Rainbow rectangle showing initial light spectrum directly right"></canvas>
+  <canvas id="filterim" width="60" height="320" class="images" role="img" aria-label="Gray rectangular filter directly right"></canvas>
+  <canvas id="filteredSpectrum" width="60" height="320" class="images" role="img" aria-label="Rainbow rectangle showing filtered light spectrum directly right"></canvas>
+  <img src="eye.png" height="320" name="eye" class="images" alt="Eye looking left"/>
   </div>
+  <br>
+  <form name="altTextForm">
+    <div class="centered">
+    <button type="button" onclick="showAltText()">Show Detailed Image Description</button>
+    <div id="altDIV"></div>
+    <p id="altTextParagraph"></p>
+    </div>
+  </form>
   <br>
   <form name="radioForm">
   <div class="centered">
@@ -54,7 +62,7 @@
   </div>
   <br>
   <div class="centered">
-  <img src="trifidNone.png" height="320" name="myImage" />
+  <img src="trifidNone.png" height="320" name="myImage" alt="Trifid Nebula, an emission/absorption nebula with a central bright star in full color. The gas of the nebula is mainly red, with some blue gas around the edge."/>
   </div>
   </div>
 <script>
@@ -67,6 +75,14 @@
     var star = document.getElementById("star");
     var filter = document.getElementById("filterim");
 
+  function showAltText() {
+    var x = document.getElementById("altTextParagraph")
+    if (x.style.display === "block") {
+      x.style.display = "none";
+    } else {
+      x.style.display = "block";
+    }
+  }
   //star, gas, filter images
   function starGas() {
     //star
@@ -175,10 +191,29 @@
     }
     filtered()
     starGas()
+
+    var filter = document.getElementById("filter").value;
+
+    // Having trouble adding breaks into this without a screen reader getting mad at me
+    document.getElementById("altTextParagraph").innerHTML = (state=="onlygas" ? "The star is not present, ":"The star is at "+Math.round(document.getElementById('starslider').value*100)+"% brightness,")
+    +(state=="onlystar" ? " and the gas cloud is not present. ": " and the gas cloud at "+Math.round(document.getElementById('gasslider').value*100)+"% opacity. ")
+    +(state=="onlygas" ? "Both spectra are mostly black, where no light is being emitted. There are several thin bands of color at various points of the rainbow visible on the unfiltered spectrum; two red/orange, three blue, and two purple.":"")
+    +(state=="starandgas" ? "Both spectra are mostly rainbow, where the light of the star is being emitted across the whole spectrum. There are several thin bands of black at various points of the rainbow visible on the unfiltered spectrum; two near red/orange, three near blue, and two near purple.":"")
+    +(state=="onlystar" ? "Both spectra are rainbow, showing light across the whole visible spectrum.":"")
+    +" Both the unfiltered and filtered spectra are " +(state=="onlygas" ? "as bright as the gas is opaque. " : "the same brightness as the star. ")
+    +(state=="starandgas" ? " The opacity of the black lines is the same opacity as the gas cloud. ":"")
+    +(filter=="None" ? "There is no filter present, so there is no difference between the unfiltered spectrum and the filtered spectrum that reaches the eye.":"A filter has been placed between the two spectra. The filtered spectrum that reaches the eye only lets")
+    +(filter=="B"?" the blue and purple parts of the unfiltered spectrum through"+(state!=="onlystar"?", including the two "+(state=="starandgas"?"dark bands.":"colorful bands."):"."):"")
+    +(filter=="R"?" the red, orange, and a bit of yellow parts of the unfiltered spectrum through"+(state!=="onlystar"?", including the two "+(state=="starandgas"?"dark bands.":"colorful bands."):"."):"")
+    +(filter=="V"?" the yellow, green, and a bit of blue parts of the unfiltered spectrum through"+(state!=="onlystar"?", which includes barely a bit of a "+(state=="starandgas"?"dark band.":"colorful band."):"."):"")
+    +(filter=="Ha"?" a small band of orange light through"+(state!=="onlystar"?" at the same location as one of the "+(state=="starandgas"?"dark bands.":"colorful bands."):".")+ (state=="starandgas"?" If the gas is completely opaque, almost no light comes through.":""):"")
+    +(filter=="O3"?" a small band of blue light through"+(state!=="onlystar"?" at the same location as one of the "+(state=="starandgas"?"dark bands.":"colorful bands."):".")+ (state=="starandgas"?" If the gas is completely opaque, almost no light comes through.":""):"")
+    +(filter=="S2"?" a small band of red light through"+(state!=="onlystar"?" at the same location as one of the "+(state=="starandgas"?"dark bands.":"colorful bands."):".")+ (state=="starandgas"?" If the gas is completely opaque, almost no light comes through.":""):"")
   }
 
   //filtered result
   function filtered() {
+    var filter = document.getElementById("filter").value;
     if (filteredSpectrum.getContext)   
     {  
         var ctx = filteredSpectrum.getContext("2d");
@@ -188,14 +223,14 @@
         ctx.fillRect(0, 0, 75, 700);
         ctx.drawImage(spectrum, 0, 0)
         
-      if (document.getElementById("filter").value!=="None") {
-        let array = filters[document.getElementById("filter").value]
-        if (document.getElementById("filter").value!=="R"){
+      if (filter!=="None") {
+        let array = filters[filter]
+        if (filter!=="R"){
           ctx.fillStyle = "black";
           ctx.globalAlpha = 1;
           ctx.fillRect(0, 0, 75, 700-array[0]-array[1]/2);
         }
-        if (document.getElementById("filter").value!=="B"){
+        if (filter!=="B"){
           ctx.fillStyle = "black";
           ctx.globalAlpha = 1;
           ctx.fillRect(0, 700-array[0]+array[1]/2, 75, 700);
@@ -204,10 +239,30 @@
 
       }
 
-      document.myImage.src ="trifid"+document.getElementById("filter").value+".png";
+      document.myImage.src ="trifid"+filter+".png";
       // document.myImage.style.filter = "brightness("+document.getElementById('gasslider').value+"%)";
-
-
+      
+      if (filter=="None") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star in full color. The gas of the nebula is mainly red, with some blue gas around the edge."
+      }
+      if (filter=="B") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted blue, and the nebula is dim compared to the sky around it, with the brightest part the gas around the edges."
+      }
+      if (filter=="V") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted green, and the nebula is uniformly bright compared to the sky around it."
+      }
+      if (filter=="R") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted red, and the nebula is bright compared to the sky around it near the central star, but dim elsewhere."
+      }
+      if (filter=="Ha") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted orange, and the nebula is fairly bright compared to the sky around it, but somewhat dimmer around the edge."
+      }
+      if (filter=="S2") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted red, and the nebula is somewhat bright compared to the sky around it near the central star, but dim elsewhere."
+      }
+      if (filter=="O3") {
+      document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star. The entire image is tinted blue, and the nebula is somewhat bright compared to the sky around it, with the bright blue extending out to the edges of the nebula."
+      }
     }
     
   }
