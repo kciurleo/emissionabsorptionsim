@@ -116,6 +116,7 @@
     //gas
     var xoff = 10;
     var yoff = -30;
+    var testthing = (document.getElementById('siliconslider').value)/3+0.2
     if (state=="onlystar") {
       context.globalAlpha = 0;
       document.getElementById('hydrogenslider').disabled=true;
@@ -126,7 +127,7 @@
       document.getElementById('siliconslider').disabled=false;
       document.getElementById('oxygenslider').disabled=false;
       //fix this lol
-      context.globalAlpha = (document.getElementById('siliconslider').value+document.getElementById('hydrogenslider').value+document.getElementById('oxygenslider').value) / 3;
+      context.globalAlpha = (document.getElementById('hydrogenslider').value)/3+(document.getElementById('siliconslider').value)/3+(document.getElementById('oxygenslider').value)/3;
     }
     context.beginPath();
     context.moveTo(196 + xoff, 232 + yoff);
@@ -255,9 +256,11 @@
     document.getElementById("altTextParagraph").innerHTML = (state=="onlygas" ? "The star is not present, ":"The star is at "+Math.round(document.getElementById('starslider').value*100)+"% brightness,")
     +(state=="onlystar" ? " and the gas cloud is not present. ": " and the gas cloud at "+Math.round(document.getElementById('hydrogenslider').value*100)+"% opacity. ")
     +(state=="onlygas" ? "Both spectra are mostly black, where no light is being emitted. There are several thin bands of color at various points of the rainbow visible on the unfiltered spectrum; two red/orange, three blue, and two purple.":"")
-    +(state=="starandgas" ? "Both spectra are mostly rainbow, where the light of the star is being emitted across the whole spectrum. There are several thin bands of black at various points of the rainbow visible on the unfiltered spectrum; two near red/orange, three near blue, and two near purple.":"")
+    +(state=="starandgas" ? "Both spectra are mostly rainbow, where the light of the star is being emitted across the whole spectrum. There are several thin bands of black at various points of the rainbow visible on the unfiltered spectrum:  two near red/orange, three near blue, and two near purple.":"")
     +(state=="onlystar" ? "Both spectra are rainbow, showing light across the whole visible spectrum.":"")
+    //this line changes based on gas!!
     +" Both the unfiltered and filtered spectra are " +(state=="onlygas" ? "as bright as the gas is opaque. " : "the same brightness as the star. ")
+    //this line changes based on gas!!
     +(state=="starandgas" ? " The opacity of the black lines is the same opacity as the gas cloud. ":"")
     +(filter=="None" ? "There is no filter present, so there is no difference between the unfiltered spectrum and the filtered spectrum that reaches the eye.":"A filter has been placed between the two spectra. The filtered spectrum that reaches the eye only lets")
     +(filter=="B"?" the blue and purple parts of the unfiltered spectrum through"+(state!=="onlystar"?", including the two "+(state=="starandgas"?"dark bands.":"colorful bands."):"."):"")
