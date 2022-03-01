@@ -42,9 +42,19 @@
   </div>
   <br>
   <div class="sliders">
-  <label for="gasslider">Gas Amount</label>
-  <input type="range" id="gasslider" min="0.1" max="1" step="0.01" class="slider" value="0">
+  <label for="hydrogenslider">Hydrogen Amount</label>
+  <input type="range" id="hydrogenslider" min="0.1" max="1" step="0.01" class="slider" value="0">
   </div>
+  <br>
+  <div class="sliders">
+  <label for="siliconslider">Silicon Amount</label>
+  <input type="range" id="siliconslider" min="0.1" max="1" step="0.01" class="slider" value="0">
+  </div> 
+  <br>
+  <div class="sliders">
+  <label for="oxygenslider">Oxygen Amount</label>
+  <input type="range" id="oxygenslider" min="0.1" max="1" step="0.01" class="slider" value="0">
+  </div> 
   </div>
   <br>
   <div class="centered">
@@ -67,7 +77,9 @@
   </div>
 <script>
     const filters = {B: [436, 89], V: [545, 84], R: [641, 100], Ha: [656.3, 3.5], S2: [672, 3.5], O3: [500, 3.5]}
-    const gases = [656, 486, 434, 410, 672, 496, 501]
+    const hlines = [656, 486, 434, 410]
+    const slines = [672]
+    const olines = [496, 501]
     // {Hydrogen: [656.3, 486.1, 434, 410.2], Sulfur: [672], Oxygen: [496, 501]}
     
     var spectrum = document.getElementById("spectrum");
@@ -106,10 +118,15 @@
     var yoff = -30;
     if (state=="onlystar") {
       context.globalAlpha = 0;
-      document.getElementById('gasslider').disabled=true;
+      document.getElementById('hydrogenslider').disabled=true;
+      document.getElementById('siliconslider').disabled=true;
+      document.getElementById('oxygenslider').disabled=true;
     } else {
-      document.getElementById('gasslider').disabled=false;
-      context.globalAlpha = document.getElementById('gasslider').value;
+      document.getElementById('hydrogenslider').disabled=false;
+      document.getElementById('siliconslider').disabled=false;
+      document.getElementById('oxygenslider').disabled=false;
+      //fix this lol
+      context.globalAlpha = (document.getElementById('siliconslider').value+document.getElementById('hydrogenslider').value+document.getElementById('oxygenslider').value) / 3;
     }
     context.beginPath();
     context.moveTo(196 + xoff, 232 + yoff);
@@ -168,9 +185,9 @@
       ctx.fillRect(0, 0, 75, 320);
     }
     //dealing with gas slider
-    gases.forEach(function (item, index) {
+    hlines.forEach(function (item, index) {
         if (state == "starandgas") {
-        ctx.globalAlpha = document.getElementById('gasslider').value;
+        ctx.globalAlpha = document.getElementById('hydrogenslider').value;
         ctx.beginPath();
         ctx.lineWidth = "5";
         ctx.strokeStyle = "black";
@@ -178,7 +195,47 @@
         ctx.lineTo(75, 700-item);
         ctx.stroke();
         } else if (state=="onlygas"){
-        ctx.globalAlpha = document.getElementById('gasslider').value;
+        ctx.globalAlpha = document.getElementById('hydrogenslider').value;
+        ctx.beginPath();
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = gradient;
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
+        ctx.stroke();
+        }
+        
+    })
+    slines.forEach(function (item, index) {
+        if (state == "starandgas") {
+        ctx.globalAlpha = document.getElementById('siliconslider').value;
+        ctx.beginPath();
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = "black";
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
+        ctx.stroke();
+        } else if (state=="onlygas"){
+        ctx.globalAlpha = document.getElementById('siliconslider').value;
+        ctx.beginPath();
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = gradient;
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
+        ctx.stroke();
+        }
+        
+    })
+    olines.forEach(function (item, index) {
+        if (state == "starandgas") {
+        ctx.globalAlpha = document.getElementById('oxygenslider').value;
+        ctx.beginPath();
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = "black";
+        ctx.moveTo(0, 700-item);
+        ctx.lineTo(75, 700-item);
+        ctx.stroke();
+        } else if (state=="onlygas"){
+        ctx.globalAlpha = document.getElementById('oxygenslider').value;
         ctx.beginPath();
         ctx.lineWidth = "5";
         ctx.strokeStyle = gradient;
@@ -196,7 +253,7 @@
 
     // Having trouble adding breaks into this without a screen reader getting mad at me
     document.getElementById("altTextParagraph").innerHTML = (state=="onlygas" ? "The star is not present, ":"The star is at "+Math.round(document.getElementById('starslider').value*100)+"% brightness,")
-    +(state=="onlystar" ? " and the gas cloud is not present. ": " and the gas cloud at "+Math.round(document.getElementById('gasslider').value*100)+"% opacity. ")
+    +(state=="onlystar" ? " and the gas cloud is not present. ": " and the gas cloud at "+Math.round(document.getElementById('hydrogenslider').value*100)+"% opacity. ")
     +(state=="onlygas" ? "Both spectra are mostly black, where no light is being emitted. There are several thin bands of color at various points of the rainbow visible on the unfiltered spectrum; two red/orange, three blue, and two purple.":"")
     +(state=="starandgas" ? "Both spectra are mostly rainbow, where the light of the star is being emitted across the whole spectrum. There are several thin bands of black at various points of the rainbow visible on the unfiltered spectrum; two near red/orange, three near blue, and two near purple.":"")
     +(state=="onlystar" ? "Both spectra are rainbow, showing light across the whole visible spectrum.":"")
@@ -240,7 +297,7 @@
       }
 
       document.myImage.src ="trifid"+filter+".png";
-      // document.myImage.style.filter = "brightness("+document.getElementById('gasslider').value+"%)";
+      // document.myImage.style.filter = "brightness("+document.getElementById('hydrogenslider').value+"%)";
       
       if (filter=="None") {
       document.myImage.alt ="Trifid Nebula, an emission/absorption nebula with a central bright star in full color. The gas of the nebula is mainly red, with some blue gas around the edge."
