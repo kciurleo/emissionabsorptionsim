@@ -19,7 +19,7 @@
   <br>
   <form name="altTextForm">
     <div class="centered">
-    <button type="button" onclick="showAltText()">Show Detailed Image Description</button>
+    <button type="button" class= "button" onclick="showAltText()">Show Detailed Image Description</button>
     <div id="altDIV"></div>
     <p id="altTextParagraph"></p>
     </div>
@@ -27,11 +27,11 @@
   <br>
   <form name="radioForm">
   <div class="centered">
-    <input type="radio" id="onlystar" name="stargasonoff" value="onlystar" checked>
+    <input class= "radio" type="radio" id="onlystar" name="stargasonoff" value="onlystar" checked>
     <label for="onlystar">Star</label>
-    <input type="radio" id="onlygas" name="stargasonoff" value="onlygas">
+    <input class= "radio" type="radio" id="onlygas" name="stargasonoff" value="onlygas">
     <label for="onlygas">Hot Gas</label>
-    <input type="radio" id="starandgas" name="stargasonoff" value="starandgas">
+    <input class= "radio" type="radio" id="starandgas" name="stargasonoff" value="starandgas">
     <label for="starandgas">Star and Cold Gas</label>
   </div>
   <br>
@@ -59,7 +59,7 @@
   <br>
   <div class="centered">
   <label for="filter">Filter</label>
-    <select id="filter" onchange="filtered()">
+    <select class="dropdown" id="filter" onchange="filtered()">
       <option value="None" selected>None</option>
       <option value="B">B</option>
       <option value="V">V</option>

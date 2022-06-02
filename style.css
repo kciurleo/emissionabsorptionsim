@@ -1,3 +1,7 @@
+body {
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
 h1 {
 	color: black;
 	text-align:center;
@@ -9,16 +13,47 @@ h1 {
     height:20px;
 }
 
+.slider:hover:enabled {
+    cursor:pointer;
+}
+
+.dropdown:hover {
+    cursor:pointer;
+}
+
 .images {
-    margin:1%;   
+    margin:1%;
+    border-radius:4px   
 }
 
 .centered {
     text-align: center;
 }
 
+.button {
+    background-color: black;
+    border: 1px solid black;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius:4px;
+  }
+
+  .button:hover {
+    cursor: pointer;
+  }
+
+  .radio:hover {
+    cursor: pointer;
+  }
+
 #altTextParagraph {
     display: none;
+    margin: auto;
+    padding-top: 10px;
+    width: 600px;
 }
 
 @media(max-width:900px){
@@ -34,5 +69,11 @@ h1 {
 
     h1 {
         font-size:28px;
+    }
+
+    #altTextParagraph {
+        display: none;
+        margin: auto;
+        width: auto;
     }
 }
